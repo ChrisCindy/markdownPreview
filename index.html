@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>GitHub Markdown Preview</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="github-markdown.css">
+    <style type="text/css">
+    body {
+        background-color: #f4f7f7;
+    }
+
+    .header-text h4 {
+        color: #454552;
+    }
+
+    .header-text h1 {
+        color: #e85a71;
+    }
+
+    #editor,
+    #preview {
+        height: 500px;
+        max-height: 500px;
+        margin-bottom: 20px;
+    }
+
+    .panel {
+        overflow-y: auto;
+        max-height: 500px;
+        padding: 10px;
+    }
+
+    .container {
+        padding-bottom: 30px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <div class="row">
+            <div class="col-xs-12 header-text">
+                <h1>GitHub Markdown Preview</h1>
+                <h4>chriscindy</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <textarea id="editor" class="form-control" v-model="rawMarkdown"></textarea>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <article class="markdown-body">{{{renderedMarkdown}}}</article>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <button type="button" class="btn btn-primary pull-right" @click="renderPreview">Preview</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/vue/1.0.16/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/vue.resource/0.7.0/vue-resource.min.js"></script>
+<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script>
+var vm = new Vue({
+    el: '#app',
+    data: {
+        rawMarkdown: '',
+        renderedMarkdown: ''
+    },
+    methods: {
+        renderPreview: function() {
+            //POST request to GitHub API
+            this.$http({
+                url: 'https://api.github.com/markdown',
+                method: 'POST',
+                data: {
+                    text: this.rawMarkdown,
+                    mode: 'gfm'
+                }
+            }).then(function(response) {
+                //success callback
+                this.renderedMarkdown = response.data;
+            }, function() {
+                //error callback
+                console.log(response.data);
+            });
+        }
+    }
+});
+</script>
+
+</html>
